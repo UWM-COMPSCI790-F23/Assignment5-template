@@ -1,10 +1,10 @@
-# Assignment 4: Selection and Manipulation
+# Assignment 5: Virtual Teleportation
 
-In this assignment, you will implement several more advanced selection and manipulation techniques that were discussed in class.
+In this assignment, you will implement a custom teleportation script and then add some advanced functionality.
 
 ## Submission Information
 
-You should fill out this information before submitting your assignment.  Make sure to document the name and source of any third party assets such as 3D models, textures, or any other content used that was not solely written by you.  Include sufficient detail for the instructor or TA to easily find them, such as a download link.
+You should fill out this information before submitting your assignment.  Make sure to document the name and source of any third party assets such as 3D models, textures, or any other content used that was not solely written by you.  Include sufficient detail for the instructor or TA to easily find them, such as a download link. Also inlude directions for how the teleportation direction is controlled (details below).
 
 Name: 
 
@@ -12,24 +12,25 @@ UWM Email:
 
 Third Party Assets:
 
+Instructions for controlling teleport directions:
+
 ## Getting Started
 
-Clone the assignment using GitHub Classroom.  The project has been configured for the Oculus Quest, and the Oculus Integration package has already been imported.
+Clone the assignment using GitHub Classroom.  The project has been configured for the Oculus Quest, and the Oculus Integration package has already been imported. A basic empty scene (`Assignment5.unity`) with an Oculus Camera Rig is also included, and this should be the scene that you edit for the assignment.
 
 ## Rubric
 
 Graded out of 20 points. 
 
-1. Add both controller objects and implement a **Fishing Reel** variant of the pointing technique (see Lecture 13 slide 9) on the right controller. This should include a visible laser pointer that originates at the right controller. When it intersects an object with the "grabbable" tag and the user pulls the trigger, the object should be considered "grabbed" until the user lets go of the trigger (see Lecture 14).  When an object is grabbed, the user should be able to move the object by rotating the controller. That is, when a controller has a grabbed object, that object should always be the same distance from the controller along the controller's forward vector. In addition, the user should be able to translate the object forwards and backwards along the ray using the thumbstick (Similar to how the depth ray in Lecture 16). (5)
-1. The user should be able to turn the Fishing Reel technique on and off using the A button on the right controller or the X button on the left controller.  Pressing either button should toggle the Fishing Reel technique. (1)
-1. Implement the **Go-Go** grasping technique (see Lecture 11 slides 33,34) on both controllers.  This will involve computing the distance between each controller and the headset.  For distances less than some threshold *d*, the location of the controller should match the user's hand to allow them to easily grab nearby objects that have the "grabbable" tag.  For distances greater than *d*, the hand should be scaled forward to extend the user's reach.  You should experiment with different values for *d* and the distance scale factor to settings that work comfortably. Lecture 16 provides an example of using modifying the relationship between the virtual and physical controllers using a a gain parameter. This will be similar, but the gain paramter will depend on *d*. (4)
-1. The user should be able to cycle between the Go-Go technique and the Fishing Reel technique using the A button on the right controller or the X button on the left controller.  When the Go-Go technique is deactivated, it should be deactivated for *both* hands. (2)
-1. Implement a **Spindle** between the two controllers (see Lecture 13 slides 48, 49).  You should use a small object such as a cube to mark the midpoint. Add the spindle technique to the technique cycle. The spindle should only be active when the Fishing Reel and Go-Go technique is toggled off. That is, there should only be one active technique at a time. When the application starts, it should be the Fishing Reel technique. When either A or X is pressed, it should then be the Go-Go technique. When either A or X are pressed again, it should be the spindle technique. When either A or X are pressed again, it should go back to Fishing Reel. This should repeat. (2)
-1. When the user grabs an object with the "grabbable" tag with either hand when the spindle is active, the object should be translated to the midpoint of the spindle. (2)
-1. When the user moves their hands, the grabbed object should be translated to follow the midpoint of the spindle.  (2)
-1. When the user moves their hands, the grabbed object should be rotated to match the alignment of the spindle.  Note that you only need to worry about yaw and roll (rotation about the Y and Z axes).  (2)
-1. When the user moves their hands closer together or further apart, the grabbed object should be scaled up or down based on the distance between them.  (2)
+1. Create a virtual scene that is a suitable testbed for virtual teleportation. It should be large enough that you can't walk through it without using virtual locomotion, and it should contain walkable surfaces at two or more elevations. For example, you might have a ground plane and a raised platform that the user will need to teleport to. Other than that, you are free to design the environment however you want, but make sure to sure low poly assets that can render smoothly on the Quest! (2)
+1. Add a `LineRenderer` laser pointer to the controller. You can feel free to customize its appearance however you want. For the purposes of this assignment, you can chose either the left or right controller. You do not have to implement this functionality on both of them. (2)
+1. The laser pointer should only appear when the thumbstick is pressed forward nearly all the way. When the thumbstick is in the rest position, it should be invisible. (2)
+1. Designate at least 5 surfaces as teleportation targets. How you do this is up to you (e.g. you could add and check for a specific script, use tags, etc.). If the laser pointer intersects one of the teleportation targets, the `LineRenderer` color should change. If it does not intersect one of the teleportation targets, the color should be set to a default color (that you can choose). The teleportation targets should not allow users to teleport to non-flat surfaces (i.e., the user should not be able to teleport to the side of a surface). An easy way to accomplish this is to add invisible quad (or thin cube) primatives on top of the surfaces you want the user to teleport to, and designate those invisible primitives as the teleportation target. (2)
+1. Now, implement the basic teleportation. When the user is pointing at a teleportation target and releases the thumbstick, move the camera rig so that the user is standing on point where the laser pointer intersected the teleportation target. Make sure to adjust the height correctly! (4)
+1. Next, we are going to add the ability to control the direction after teleportation.  First, you should add an arrow or another visual indicator that will be displayed if the user is pointing at a valid teleportation point.  See Figure 2 in [Bozgeyikli et al.](https://dl.acm.org/doi/abs/10.1145/2967934.2968105) for an example.  You can decide how to best control the direction of the indicator, such as a thumbstick or the rotation of the user's hand.  Feel free to implement this however you want, but make sure that the user has a way to control the direction in all 360 degrees.  Make sure to describe the instructions in the submission of your readme file so we know how to use it properly. (4)
+1. Finally, you can complete this assignment by modifying the camera rig's rotation so that the user's viewpoint is pointing in the specified direction after the teleport.  (4)
 
+**Bonus Challenge:**  Make your teleportation script smarter!  When the user is pointing directly at a `TeleportationTarget` , the teleport should work using the direct straight line raycast as described above.  If they are not pointing at a valid target, then the script should use a parabolic arc to attempt to find another target.  This will allow the user to point above the ground, and the laser pointer will adapt and curve downwards.  Note that this is actually quite complicated to implement, so you are free to use code from online or third party assets to implement the trajectory calculations and/or line drawing for the parabolic arc.  The teleportation functionality must be solely written by you.  Make sure to include comments on any external code and document the source in your readme file.  (2)
 
 Make sure to document all third party assets in your readme file. ***Be aware that points will be deducted for using third party assets that are not properly documented.***
 
@@ -40,7 +41,5 @@ You will need to check out and submit the project through GitHub classroom.  **M
 Please test that your submission meets these requirements.  For example, after you check in your final version of the assignment to GitHub, check it out again to a new directory and make sure everything opens and runs correctly.  You can also test your APK file by installing it manually using [SideQuest](https://sidequestvr.com/).
 
 ## Acknowledgments
-
-The scene uses assets from the [Playground Low Poly](https://assetstore.unity.com/packages/3d/environments/playground-low-poly-191533) package from the Unity Asset Store. 
 
 This assignment is a modified version of an assignment from a class taught by Professor Evan Suma Rosenberg at the University of Minnesota.   
